@@ -1,2 +1,3 @@
-# card-app
-Dockerized library card application form (Python, Flask, Sierra API)
+# About
+
+A dockerized library card application form. Uses Python, Flask, Sierra API.

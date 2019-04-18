@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}Card Application{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h2>Library Card Application</h2>
+<form method=post>
+  <fieldset>
+    {{ render_field(form.name) }}
+  </fieldset>
+  <p><input type=submit value=Submit></p>
+</form>
+{% endblock %}

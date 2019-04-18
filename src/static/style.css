@@ -1,0 +1,21 @@
+.container {
+  padding: 4rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+li {
+  list-style:none;
+}
+
+input[type="submit"] {
+    background-color: #4bb454;
+    border: 0.1rem solid #4bb454;
+}
+
+a {
+    color: #57a3cf;
+    text-decoration: none;
+}
