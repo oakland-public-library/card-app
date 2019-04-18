@@ -1,6 +1,6 @@
 # flask and forms
 from flask import Flask, request, render_template
-from wtforms import Form, StringField, BooleanField, RadioField
+from wtforms import Form, StringField, IntegerField, BooleanField, RadioField, DateTimeField
 from wtforms.validators import DataRequired, Length
 
 # interact with sierra API
@@ -22,22 +22,6 @@ API_URL_BASE = os.environ['SIERRA_API_URL_BASE']
 
 SMTP_HOST = os.environ['SMTP_HOST']
 SMTP_USER = os.environ['SMTP_USER']
-
-# birth date: month, day, year
-# age range: child (0-7), child (8-12), teen (13-17), adult (18+)
-# name: last, first, middle initial
-# address: number, street, apt number, city, state, zip code
-# telephone: area code, number
-# email address
-# school (optional)
-# ID number (use drop-down for type)
-# languages (use note?)
-# want extended services? (checkbox)
-# want teacher card? (checkbox)
-# want designated borrower? (checkbox)
-# designated borrower: name
-# parent signature (0-12 only)
-# parent name (0-12 only)
 
 patron_data = {
     # "expirationDate": str(expiration_date) set to arbitrary past date,
@@ -139,8 +123,27 @@ def send_email(record):
     mail.send(msg)
 
 class RegForm(Form):
-    name = StringField('Name', [DataRequired(), Length(min=2, max=20)])
-
+    birth_date  = DateTimeField('Birth Date', format='%m/%d/%y')
+    last = StringField('Last', [DataRequired(), Length(max=20)])
+    first = StringField('First', [DataRequired(), Length(max=20)])
+    initial = StringField('Middle Initial', [DataRequired(), Length(max=1)])
+    addr_num = IntegerField('Number', [DataRequired(), Length(max=10)])
+    street = StringField('Street', [DataRequired(), Length(max=20)])
+    apt_num = StringField('Apartment Number', [DataRequired(), Length(max=20)])
+    city = StringField('City', [DataRequired(), Length(max=20)])
+    state = StringField('State', [DataRequired(), Length(max=20)])
+    zip_code = StringField('Zip Code', [DataRequired(), Length(max=10)])
+    telephone = StringField('Telephone', [DataRequired(), Length(max=20)])
+    email = StringField('Email', [DataRequired(), Length(max=20)])
+    school = StringField('School (optional)', [DataRequired(), Length(max=20)])
+    id_num = StringField('ID (see below for details)', [DataRequired(), Length(max=20)])
+    want_ext_svc = BooleanField('Want Extended Services', [DataRequired()])
+    want_teacher_card = BooleanField('Want Teacher Card', [DataRequired()])
+    want_designated = BooleanField('Want Designated Borrower', [DataRequired()])
+    designated = StringField('Designated Borrowers', [DataRequired(), Length(max=20)])
+    parent_sig = StringField('Parent/Legal Guardian’s Signature', [DataRequired(), Length(max=20)])
+    parent_name = StringField('Parent/Legal Guardian’s Name', [DataRequired(), Length(max=20)])
+    
 app = Flask(__name__)
 
 @app.route('/apply', methods=['GET', 'POST'])
