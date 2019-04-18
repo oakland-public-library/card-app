@@ -3,3 +3,4 @@ gunicorn>=19,<20
 WTForms
 oauthlib
 requests_oauthlib
+flask_mail
