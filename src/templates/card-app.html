@@ -1,18 +1,34 @@
 {% extends "layout.html" %}
-{% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_field, render_inline_field, render_inline_group%}
 {% block title %}Card Application{% endblock %}
 {% block head %}
 {{ super() }}
 {% endblock %}
 {% block content %}
+
+<span><img class="logo" src="static/opl_logo.svg"></span>
+<span class="header">
 <h4>Oakland Public Library</h4>
 <h2>Library Card Application</h2>
+</span>
+
+<hr>
 
 <form method=post>
-  <fieldset>
-    {{ render_field(form.birth_date) }}
-  </fieldset>
-
+  <p>{{ render_inline_group(form.birth_date) }}</p>
+  <p>
+    <dt>{{ form.age_range.label }}</dt>
+    {% for field in form.age_range %}
+    <span class="sublabel">{{ field.label }}</span><span>{{ field }}</span>
+    {% endfor %}
+  </p>
+  <p>{{ render_inline_group(form.name) }}</p>
+  <p>{{ render_inline_group(form.address) }}</p>
+  <p>
+    {{ render_inline_field(form.phone) }}
+    {{ render_inline_field(form.email) }}
+  </p>
+  
   <p>What language(s) besides English do you use?</p>
 
   <p>If you have a disability and would like to have Extended Services, please check this box.</p>

@@ -1,6 +1,6 @@
 # flask and forms
 from flask import Flask, request, render_template
-from wtforms import Form, StringField, IntegerField, BooleanField, RadioField, DateTimeField
+from wtforms import Form, StringField, IntegerField, BooleanField, RadioField, FormField
 from wtforms.validators import DataRequired, Length
 
 # interact with sierra API
@@ -15,6 +15,10 @@ import os
 
 # confirmation email
 from flask_mail import Mail, Message
+
+# debug
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 API_KEY = os.environ['SIERRA_API_KEY']
 API_SECRET = os.environ['SIERRA_API_SECRET']
@@ -122,33 +126,49 @@ def send_email(record):
     mail = Mail(app)
     mail.send(msg)
 
-class RegForm(Form):
-    birth_date  = DateTimeField('Birth Date', format='%m/%d/%y')
+class BirthDate(Form):
+    month = IntegerField('Month', [DataRequired(), Length(max=2)])
+    day = IntegerField('Day', [DataRequired(), Length(max=2)])
+    year = IntegerField('Year', [DataRequired(), Length(min=4, max=4)])
+
+class Name(Form):
     last = StringField('Last', [DataRequired(), Length(max=20)])
     first = StringField('First', [DataRequired(), Length(max=20)])
     initial = StringField('Middle Initial', [DataRequired(), Length(max=1)])
+
+class Address(Form):
     addr_num = IntegerField('Number', [DataRequired(), Length(max=10)])
     street = StringField('Street', [DataRequired(), Length(max=20)])
     apt_num = StringField('Apartment Number', [DataRequired(), Length(max=20)])
     city = StringField('City', [DataRequired(), Length(max=20)])
     state = StringField('State', [DataRequired(), Length(max=20)])
     zip_code = StringField('Zip Code', [DataRequired(), Length(max=10)])
-    telephone = StringField('Telephone', [DataRequired(), Length(max=20)])
+    
+class RegForm(Form):
+    birth_date = FormField(BirthDate)
+    age_range = RadioField('Age', choices = [('child1', 'Child 0-7'),
+                                             ('child2', 'Child 8-12'),
+                                             ('teen', 'Teen 13-17'),
+                                             ('adult', 'Adult 18+')])
+    name = FormField(Name)
+    address = FormField(Address)
+    phone = StringField('Telephone', [DataRequired(), Length(max=20)])
     email = StringField('Email', [DataRequired(), Length(max=20)])
     school = StringField('School (optional)', [DataRequired(), Length(max=20)])
     id_num = StringField('ID (see below for details)', [DataRequired(), Length(max=20)])
     want_ext_svc = BooleanField('Want Extended Services', [DataRequired()])
     want_teacher_card = BooleanField('Want Teacher Card', [DataRequired()])
-    want_designated = BooleanField('Want Designated Borrower', [DataRequired()])
-    designated = StringField('Designated Borrowers', [DataRequired(), Length(max=20)])
+    want_dsg_borrower = BooleanField('Want Designated Borrower', [DataRequired()])
+    dsg_borrower = StringField('Designated Borrowers', [DataRequired(), Length(max=20)])
     parent_sig = StringField('Parent/Legal Guardian’s Signature', [DataRequired(), Length(max=20)])
     parent_name = StringField('Parent/Legal Guardian’s Name', [DataRequired(), Length(max=20)])
     
 app = Flask(__name__)
 
 @app.route('/apply', methods=['GET', 'POST'])
-def login():
+def apply():
     form = RegForm(request.form)
+    pp.pprint(request.form)
     if not request.form:
         # set form defaults here
         form.process()
@@ -162,5 +182,12 @@ def login():
             record = json.load(infile)
 
         send_email(record)
+
         #return render_template('success.html', form=form)
     return render_template('card-app.html', form=form)
+
+@app.route('/email', methods=['GET', 'POST'])
+def email():
+    form = RegForm(request.form)
+    form.patron_name.first = 'foo'
+    return render_template('email.html', form=form)
