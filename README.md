@@ -6,11 +6,11 @@ A dockerized library card application form. Uses Python, Flask, Sierra API.
 
 These environment variables must be set to configure the application:
 
-- `SIERRA_API_URL_BASE`- Sierra API URL, e.g. https://catalog.yourlibrary.org/iii/sierra-api/v5
-- `SIERRA_API_KEY`- Sierra API Key
-- `SIERRA_API_SECRET`- Sierra API secret
-- `SMTP_HOST` - SMTP server host name
-- `SMTP_USER` - Confirmation email "from" address
+- `SIERRA_API_URL_BASE` Sierra API URL, e.g. https://catalog.yourlibrary.org/iii/sierra-api/v5
+- `SIERRA_API_KEY` Sierra API Key
+- `SIERRA_API_SECRET` Sierra API secret
+- `SMTP_HOST` SMTP server host name
+- `SMTP_USER` Confirmation email "from" address
 
 # Testing
 
