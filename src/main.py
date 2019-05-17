@@ -165,7 +165,7 @@ class RegForm(Form):
     
 app = Flask(__name__)
 
-@app.route('/apply', methods=['GET', 'POST'])
+@app.route('/card', methods=['GET', 'POST'])
 def apply():
     form = RegForm(request.form)
     pp.pprint(request.form)

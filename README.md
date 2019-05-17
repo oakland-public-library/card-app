@@ -1,34 +1,26 @@
 # About
 
-A dockerized library card application form. Uses Python, Flask, Sierra API.
+A dockerized library card application form. Uses Python, Flask, and the Sierra API (v5+).
 
 # Environment Variables
 
-These environment variables must be set to configure the application:
+Copy ```env-example.conf``` to a new file ```.env``` in the project root, and set the variables to suit your installation.
 
-- `SIERRA_API_URL_BASE` Sierra API URL, e.g. https://catalog.yourlibrary.org/iii/sierra-api/v5
-- `SIERRA_API_KEY` Sierra API Key
-- `SIERRA_API_SECRET` Sierra API secret
-- `SMTP_HOST` SMTP server host name
-- `SMTP_USER` Confirmation email "from" address
+# Testing (Linux)
 
-# Testing
-
-Install required packages:
-
-```
-pip install -r requirements.txt
-```
-
-Start debug SMTP server:
+__Start debug SMTP server:__
 
 ```
 sudo python -m smtpd -n -c DebuggingServer localhost:25
 ```
 
-Serve application form locally using gunicorn:
+__Build and run Docker image:__
 
 ```
-cd src
-gunicorn --reload -b 0.0.0.0:8000 main:app
+docker build -t card-app .
+docker run --rm --env-file .env --net="host" --name card-app card-app
 ```
+
+__View the application:__
+
+Browse to `http://localhost/card`.
