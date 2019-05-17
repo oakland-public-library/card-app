@@ -4,7 +4,7 @@ A dockerized library card application form. Uses Python, Flask, and the Sierra A
 
 # Environment Variables
 
-Copy ```env-example.conf``` to a new file ```.env``` in the project root, and set the variables to suit your installation.
+This application depends on several environment variables used for control how to access the Sierra API and a SMTP server (for sending confirmation messages). Before running the docker image, copy ```env-example.conf``` to a new file ```.env``` in the project root, and set the variables to suit your particular installation.
 
 # Testing (Linux)
 
