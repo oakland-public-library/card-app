@@ -19,8 +19,12 @@ __Build and run Docker image:__
 ```
 docker build -t card-app .
 docker run --rm --env-file .env --net="host" --name card-app card-app
+
+docker build -t card-app .
+docker run --rm --env-file .env --publish=8080:80 --name card-app card-app
+
 ```
 
 __View the application:__
 
-Browse to `http://localhost/card`.
+Browse to `http://localhost:8080/card`.

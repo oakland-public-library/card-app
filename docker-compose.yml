@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  smtpd:
+    image: smtpd-debug
+    container_name: "smtpd-debug"
+    build:
+      context: smtpd-debug
+  card-app:
+    image: card-app
+    container_name: "card-app"
+    environment:
+      SIERRA_API_URL_BASE: $SIERRA_API_URL_BASE
+      SIERRA_API_KEY: $SIERRA_API_KEY
+      SIERRA_API_SECRET: $SIERRA_API_SECRET
+      SMTP_HOST: $SMTP_HOST
+      SMTP_USER: $SMTP_USER
+    ports:
+      - '8080:80'
