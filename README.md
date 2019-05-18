@@ -23,6 +23,8 @@ docker run --rm --env-file .env --net="host" --name card-app card-app
 docker build -t card-app .
 docker run --rm --env-file .env --publish=8080:80 --name card-app card-app
 
+docker-compose rebuild; docker-compose up
+
 ```
 
 __View the application:__
