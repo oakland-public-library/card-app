@@ -16,4 +16,4 @@ docker-compose up --build
 
 # View the Application
 
-Browse to `http://localhost:8080/card`.
+Browse to `http://localhost:8888/card`.
