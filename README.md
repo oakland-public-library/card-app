@@ -4,29 +4,17 @@ A dockerized library card application form. Uses Python, Flask, and the Sierra A
 
 # Environment Variables
 
-This application depends on several environment variables used for control how to access the Sierra API and a SMTP server (for sending confirmation messages). Before running the docker image, copy ```env-example.conf``` to a new file ```.env``` in the project root, and set the variables to suit your particular installation.
+Configuration variables from the file ```.env``` will be used to configure the application when its Docker image is built. Copy ```env-example.conf``` to a new file ```.env``` in the project root, setting values to suit your particular installation.
 
-# Testing (Linux)
+# Build and Run Docker Images
 
-__Start debug SMTP server:__
-
-```
-sudo python -m smtpd -n -c DebuggingServer localhost:25
-```
-
-__Build and run Docker image:__
+Use docker-compose to build and run the application, along with a debug SMTP server to handle the confirmation emails (message content will appear in the console log):
 
 ```
-docker build -t card-app .
-docker run --rm --env-file .env --net="host" --name card-app card-app
-
-docker build -t card-app .
-docker run --rm --env-file .env --publish=8080:80 --name card-app card-app
-
-docker-compose rebuild; docker-compose up
+docker-compose up --build
 
 ```
 
-__View the application:__
+# View the application
 
 Browse to `http://localhost:8080/card`.

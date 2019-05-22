@@ -2,13 +2,13 @@ version: "3"
 
 services:
   smtpd:
-    image: smtpd-debug
     container_name: "smtpd-debug"
     build:
       context: smtpd-debug
   card-app:
-    image: card-app
     container_name: "card-app"
+    build:
+      context: .
     environment:
       SIERRA_API_URL_BASE: $SIERRA_API_URL_BASE
       SIERRA_API_KEY: $SIERRA_API_KEY
