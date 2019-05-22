@@ -14,6 +14,6 @@ Use docker-compose to build and run the application, along with a debug SMTP ser
 docker-compose up --build
 ```
 
-# View the application
+# View the Application
 
 Browse to `http://localhost:8080/card`.
