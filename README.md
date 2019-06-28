@@ -1,6 +1,6 @@
 # About
 
-A dockerized library card application form. Uses Python, Flask, and the Sierra API (v5+).
+A library card application form for patrons, leveraging the Sierra REST API (v5 or higher). Includes Docker configs for easy deployment.
 
 # Environment Variables
 
