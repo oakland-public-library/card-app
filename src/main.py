@@ -1,3 +1,9 @@
+# OS interaction and debugging
+import os
+import json
+import pprint
+import logging
+
 # flask and forms
 from flask import Flask, request, render_template
 from wtforms import Form, StringField, IntegerField, BooleanField, RadioField, FormField
@@ -8,20 +14,15 @@ from oauthlib.oauth2 import BackendApplicationClient
 from requests.auth import HTTPBasicAuth
 from requests_oauthlib import OAuth2Session
 from datetime import datetime
-import json
-
-# get configuration passed through environment variables (e.g. by docker)
-import os
-
-# confirmation email
 from flask_mail import Mail, Message
 
-# debug
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
+# test routines and mock data
+import test
 
-# logging
-import logging
+app = Flask(__name__)
+app.config['DEBUG'] = True
+
+pp = pprint.PrettyPrinter(indent=4)
 
 API_KEY = os.environ.get('SIERRA_API_KEY', 'NONE')
 API_SECRET = os.environ.get('SIERRA_API_SECRET', 'NONE')
@@ -29,73 +30,6 @@ API_URL_BASE = os.environ.get('SIERRA_API_URL_BASE', 'NONE')
 
 SMTP_HOST = os.environ.get('SMTP_HOST', 'localhost')
 SMTP_USER = os.environ.get('SMTP_USER', 'root')
-
-test_record = {
-    # "expirationDate": str(expiration_date) set to arbitrary past date,
-        "expirationDate": '2001-01-01',
-    "patronCodes": {
-        # age level
-            "pcode1": "1",
-        # not used for online reg
-            "pcode2": "-",
-        # library jurisdiction
-            "pcode3": 1
-    },
-    "varFields": [{
-        # school
-            "fieldTag": "c",
-        "content": "SIERRA ELEMENTARY"
-    },
-                  {
-                      # unique ID
-                "fieldTag": "u",
-                      "content": "CS{}".format(
-                          datetime.now().strftime('%y%m%d%H%M%S'))
-                  },
-                  {
-                      # parent name
-                "fieldTag": "e",
-                      "content": "TEST PARENT"
-                  },
-                  {
-                      # language
-                "fieldTag": "k",
-                      "content": "MALTESE"
-                  },
-                  {
-                      # self reg info
-                "fieldTag": "d",
-                      "content": "|t ID_PASSPORT"
-                  },
-    ]
-    ,
-    "patronType": 18,
-    # "birthDate": str(birth_date),
-    # dates should be in the format YYYY-MM-DD
-        "birthDate": '2006-12-01',
-    # Home Library
-        "homeLibraryCode": 'xxa',
-    "names": [
-        'PATLASTNAME' + ', ' + 'PATFIRSTNAME' + ' ' + 'M'
-    ],
-    # 3 lines if apt number exists, else 2 lines
-        "addresses": [{
-            "lines": [
-                '125 14TH ST',
-                'APT 2',
-                'OAKLAND, CA 94612'
-            ],
-            "type": "a"
-        }],
-    # format xxx-xxx-xxxx
-        "phones": [{
-            "number": '510-999-9999',
-            "type": "t"
-        }],
-    "emails": [
-        "devnullexplorer@aol.com"
-    ],
-}
 
 def authenticate(api_key, api_secret):
     auth = HTTPBasicAuth(api_key, api_secret)
@@ -119,6 +53,7 @@ def patron_record_by_id(session, record_id):
     return json.loads(r.text)
 
 def send_email(record):
+    app.logger.info('sending confirmation email')
     patron_name = record['names'][0]
     home_code = record['homeLibraryCode']
     subject = 'Your New Library Card'
@@ -149,10 +84,6 @@ class Address(Form):
 
 class RegForm(Form):
     birth_date = FormField(BirthDate)
-    age_range = RadioField('Age', choices = [('child1', 'Child 0-7'),
-                                             ('child2', 'Child 8-12'),
-                                             ('teen', 'Teen 13-17'),
-                                             ('adult', 'Adult 18+')])
     name = FormField(Name)
     address = FormField(Address)
     phone = StringField('Telephone', [DataRequired(), Length(max=20)])
@@ -167,39 +98,22 @@ class RegForm(Form):
     parent_name = StringField('Parent/Legal Guardian’s Name', [DataRequired(), Length(max=20)])
 
 def form_export_record(form):
-    return {}
-
-def form_fill(form):
-    # form.name.data['first'] = 'foobar'
-    return {'email': 'foobar'}
-
-app = Flask(__name__)
+    app.logger.info('exporting patron record')
+    return test.mock_record()
 
 @app.route('/card', methods=['GET', 'POST'])
 def apply():
-    nostore = 'nostore' in request.args
-    preload = 'preload' in request.args
+    app.logger.info('{} {}'.format(request.method, request.url))
     form = RegForm(request.form)
-    if not request.form:
-        if preload:
-            logging.info("loading form with test data")
-            form = RegForm(data=form_import_record(test_record))
-            # print(form.name.data['first'])
-            form_fill(form)
-            form.process()
+    if not request.form and 'preload' in request.args:
+        app.logger.info('populating form with mock data')
+        app.logger.info(form.data.keys())
+        test.form_fill(form)
     if request.method == 'POST' and form.validate():
-        if nostore:
-            logging.info("not storing patron record")
-        else:
-            logging.info("storing patron record")
-            record_in = form_export_record(form)
-            session = authenticate(API_KEY, API_SECRET)
-            # TODO: handle record creation failure, (e.g. duplicate record)
-            record_id = create_patron(session, record_in)
-            record_out = patron_record_by_id(session, record_id)
-            logging.debug(record_out)
-        logging.info("sending confirmation email")
-        send_email(form)
+        app.logger.info('form validated successfully')
+        record = form_export_record(form)
+        create_patron(authenticate(API_KEY, API_SECRET), record)
+        send_email(record)
         return render_template('success.html', form=form)
     return render_template('card-app.html', form=form)
 
