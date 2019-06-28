@@ -20,14 +20,17 @@ from flask_mail import Mail, Message
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-API_KEY = os.environ['SIERRA_API_KEY']
-API_SECRET = os.environ['SIERRA_API_SECRET']
-API_URL_BASE = os.environ['SIERRA_API_URL_BASE']
+# logging
+import logging
 
-SMTP_HOST = os.environ['SMTP_HOST']
-SMTP_USER = os.environ['SMTP_USER']
+API_KEY = os.environ.get('SIERRA_API_KEY', 'NONE')
+API_SECRET = os.environ.get('SIERRA_API_SECRET', 'NONE')
+API_URL_BASE = os.environ.get('SIERRA_API_URL_BASE', 'NONE')
 
-patron_data = {
+SMTP_HOST = os.environ.get('SMTP_HOST', 'localhost')
+SMTP_USER = os.environ.get('SMTP_USER', 'root')
+
+test_record = {
     # "expirationDate": str(expiration_date) set to arbitrary past date,
         "expirationDate": '2001-01-01',
     "patronCodes": {
@@ -118,7 +121,7 @@ def patron_record_by_id(session, record_id):
 def send_email(record):
     patron_name = record['names'][0]
     home_code = record['homeLibraryCode']
-    subject = 'Yout New Library Card'
+    subject = 'Your New Library Card'
     sender = SMTP_USER
     msg = Message(subject, sender=sender, recipients=record['emails'])
     msg.body = render_template('email.txt', name=patron_name)
@@ -143,7 +146,7 @@ class Address(Form):
     city = StringField('City', [DataRequired(), Length(max=20)])
     state = StringField('State', [DataRequired(), Length(max=20)])
     zip_code = StringField('Zip Code', [DataRequired(), Length(max=10)])
-    
+
 class RegForm(Form):
     birth_date = FormField(BirthDate)
     age_range = RadioField('Age', choices = [('child1', 'Child 0-7'),
@@ -162,32 +165,46 @@ class RegForm(Form):
     dsg_borrower = StringField('Designated Borrowers', [DataRequired(), Length(max=20)])
     parent_sig = StringField('Parent/Legal Guardian’s Signature', [DataRequired(), Length(max=20)])
     parent_name = StringField('Parent/Legal Guardian’s Name', [DataRequired(), Length(max=20)])
-    
+
+def form_export_record(form):
+    return {}
+
+def form_fill(form):
+    # form.name.data['first'] = 'foobar'
+    return {'email': 'foobar'}
+
 app = Flask(__name__)
 
 @app.route('/card', methods=['GET', 'POST'])
 def apply():
+    nostore = 'nostore' in request.args
+    preload = 'preload' in request.args
     form = RegForm(request.form)
-    pp.pprint(request.form)
     if not request.form:
-        # set form defaults here
-        form.process()
+        if preload:
+            logging.info("loading form with test data")
+            form = RegForm(data=form_import_record(test_record))
+            # print(form.name.data['first'])
+            form_fill(form)
+            form.process()
     if request.method == 'POST' and form.validate():
-        # session = authenticate(API_KEY, API_SECRET)
-        # record_id = create_patron(session, patron_data)
-        # record = patron_record_by_id(session, record_id)
-
-        # for testing: load patron record from file
-        with open('test_record.json', 'r') as infile:
-            record = json.load(infile)
-
-        send_email(record)
-
-        #return render_template('success.html', form=form)
+        if nostore:
+            logging.info("not storing patron record")
+        else:
+            logging.info("storing patron record")
+            record_in = form_export_record(form)
+            session = authenticate(API_KEY, API_SECRET)
+            # TODO: handle record creation failure, (e.g. duplicate record)
+            record_id = create_patron(session, record_in)
+            record_out = patron_record_by_id(session, record_id)
+            logging.debug(record_out)
+        logging.info("sending confirmation email")
+        send_email(form)
+        return render_template('success.html', form=form)
     return render_template('card-app.html', form=form)
 
 @app.route('/email', methods=['GET', 'POST'])
 def email():
     form = RegForm(request.form)
-    form.patron_name.first = 'foo'
+    form.name.first = "Patron's Name"
     return render_template('email.html', form=form)
