@@ -27,7 +27,7 @@ Run the application from within the source directory:
 
 ```
 cd src
-gunicorn --reload -b 0.0.0.0:8888 src/main:app
+gunicorn --reload -b 0.0.0.0:8888 main:app
 ```
 
 # View the Application
