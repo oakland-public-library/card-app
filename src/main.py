@@ -83,18 +83,27 @@ class Address(Form):
     zip_code = StringField('Zip Code', [DataRequired(), Length(max=10)])
 
 class RegForm(Form):
+    # basic info
     birth_date = FormField(BirthDate)
     name = FormField(Name)
     address = FormField(Address)
     phone = StringField('Telephone', [DataRequired(), Length(max=20)])
     email = StringField('Email', [DataRequired(), Length(max=20)])
+
+    # optional
     school = StringField('School (optional)', [DataRequired(), Length(max=20)])
+
+    # required for adults (and teens 13-17 if they have it)
     id_num = StringField('ID (see below for details)', [DataRequired(), Length(max=20)])
+
+    # all optional
+    languages = StringField('What language(s) besides English do you use?', [Length(max=20)])
     want_ext_svc = BooleanField('Want Extended Services', [DataRequired()])
     want_teacher_card = BooleanField('Want Teacher Card', [DataRequired()])
     want_dsg_borrower = BooleanField('Want Designated Borrower', [DataRequired()])
-    dsg_borrower = StringField('Designated Borrowers', [DataRequired(), Length(max=20)])
-    parent_sig = StringField('Parent/Legal Guardian’s Signature', [DataRequired(), Length(max=20)])
+    dsg_borrower = StringField('Designated Borrowers', [DataRequired(), Length(max=120)])
+
+    # required for children 0-12
     parent_name = StringField('Parent/Legal Guardian’s Name', [DataRequired(), Length(max=20)])
 
 def form_export_record(form):

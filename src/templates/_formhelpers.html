@@ -22,3 +22,8 @@
   <span><dd>{{ field(**kwargs)|safe }}</dd><dt class="sublabel">{{ field.label }}</dt></span>
   {% endfor %}
 {% endmacro %}
+
+{% macro render_boolean(field) %}
+  <span>{{ field(**kwargs)|safe }}</span>
+{% endmacro %}
+

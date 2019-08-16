@@ -1,9 +1,6 @@
 body {
   color: #231f20;
-}
-
-li {
-  list-style:none;
+  font-size: 11pt;
 }
 
 a {
@@ -21,10 +18,10 @@ dd {
 }
 
 hr {
-  margin: 1rem 0 1rem 0;
+  margin: 1rem 0 3rem 0;
   border: none;
   height: 1px;
-  background-color: #231f20;    
+  background-color: #837f80;    
 }
 
 input[type="text"] {
@@ -57,8 +54,13 @@ input[type="submit"]:hover {
   width: 10rem;
 }
 
-.header h1,h2,h3,h4 {
-  margin: 0;
+form h1,h2,h3,h4 {
+  margin: 4rem 0 1rem 0;
+  font-weight: bold;
+}
+
+.header h2 {
+  margin-top: 0;
 }
 
 .container {
@@ -69,3 +71,28 @@ input[type="submit"]:hover {
   text-align: center;
 }
 
+.strong-bullets {
+  font-weight: bold;
+}
+
+.strong-bullets li {
+  margin: 0.5rem, 0 0.5rem 0;
+}
+
+.checkbox-list li {
+  list-style:none;
+}
+
+.id-list {
+  font-weight: bold;
+  font-size: 0.85em;
+  column-count: 3;
+}
+
+.id-list li {
+  margin: 0;
+}
+
+ul li {
+  list-style-type: disc;
+}

@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "_formhelpers.html" import render_field, render_inline_field, render_inline_group%}
+{% from "_formhelpers.html" import render_field, render_inline_field, render_inline_group, render_boolean %}
 {% block title %}Card Application{% endblock %}
 {% block head %}
 {{ super() }}
@@ -22,28 +22,35 @@
     {{ render_inline_field(form.phone) }}
     {{ render_inline_field(form.email) }}
   </p>
-  
-  <p>What language(s) besides English do you use?</p>
+  <p>{{ render_inline_field(form.school) }}</p>
+  <p>{{ render_inline_field(form.id_num) }}</p>
 
-  <p>If you have a disability and would like to have Extended Services, please check this box.</p>
-  <p>If you would like a Teacher Card, please check this box. (For teachers who teach in Oakland, Emeryville, and Piedmont. Additional ID required.)</p>
-  <p>If you would like to add a Designated Borrower, please see instructions on the other side of this form and check this box.</p>
+  <p>{{ render_inline_field(form.languages) }}</p>
 
-  <ul>
+  <ul class="checkbox-list">
+  <li>{{ render_boolean(form.want_ext_svc) }} If you have a disability and would like to have Extended Services, please check this box.</li>
+  <li>{{ render_boolean(form.want_teacher_card) }} If you would like a Teacher Card, please check this box (For teachers who teach in Oakland, Emeryville, and Piedmont. Additional ID required.)</li>
+  <li>{{ render_boolean(form.want_dsg_borrower) }} If you would like to add a Designated Borrower, please check this box and see the instructions below.</li>
+  </ul>
+
+  <hr>
+
+  <ul class="strong-bullets">
     <li>For your own protection, please report the loss of your library card immediately.</li>
     <li>Please let us know if you change your name, telephone, email, or address.</li>
     <li>Protect your account: Don’t write your PIN on your card, or let others use it.</li>
   </ul>
-
+  
   <h4>Parent/Legal Guardian Agreement Required for Children 0-12</h4>
 
-  <p>I have read and understand the parent agreement on the other side of this form.</p>
+  <p>{{ render_inline_field(form.parent_name) }}</p>
+  <p>{{ render_boolean(form.want_dsg_borrower) }} I have read and understand the parent agreement described below.</p>
 
   <h4>ID Information</h4>
   <p>Adults and teens must show current identification. If a teen does not have identification, they may have a parent/legal guardian sign their application instead.</p>
 
   <p>ID is not required for parents/legal guardians signing an application for their child’s card. Acceptable IDs include but are not limited to:</p>
-  <ul>
+  <ul class="id-list">
     <li>Valid State Driver’s License / Identification Card</li>
     <li>Photo ID Transit Card / City ID</li>
     <li>First Class mail addressed to you</li>
@@ -57,7 +64,8 @@
   </ul>
 
   <h4>Designated Borrowers</h4>
-  <p>Designated Borrowers may only check out materials on your record. Library staff cannot disclose other information in your record to them. If you wish to add a Designated Borrower(s) to your record, please write their full name(s) here:</p>
+  <p>Designated Borrowers may only check out materials on your record. Library staff cannot disclose other information in your record to them. If you wish to add a Designated Borrower(s) to your record, please enter their full name(s) here:</p>
+  <p>{{ render_inline_field(form.dsg_borrower) }}</p>
 
   <h4>Additional Services</h4>
   <p>OPL offers extended borrowing to teachers who teach in Oakland, Emeryville and Piedmont and to people with disabilities. Please ask staff if you are interested in these services. Residents of Oakland, Emeryville, and Piedmont can inquire about borrowing tools. More information is available on our website. Additional ID required for teachers: School or institution identification, or school or institution paystub, or CA family childcare home license, or affidavit of private school, or letter of acknowledgement of homeschooling from a local school district (Oakland, Piedmont, or Emeryville).</p>
