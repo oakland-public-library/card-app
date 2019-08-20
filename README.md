@@ -33,3 +33,7 @@ gunicorn --reload -b 0.0.0.0:8888 main:app
 # View the Application
 
 Browse to `http://localhost:8888/card`.
+
+# Preload form data
+
+Append `preload` to the query string: `http://localhost:8888/card?preload`.
