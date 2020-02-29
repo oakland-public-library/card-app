@@ -16,10 +16,16 @@ docker-compose up --build
 
 # Local Testing with gunicorn and aiosmtpd
 
-Simulate a production SMTP server to view confirmation emails sent to patrons (run from a separate terminal):
+Create a Python virtual environment with requisite packages:
 
 ```
-sudo pip install aiosmtpd
+python3 -m venv env
+pip3 install gunicorn aiosmtpd wtforms oauthlib requests requests_oauthlib flask flask_mail
+```
+
+Simulate a production SMTP server to view confirmation emails sent to patrons. From a separate terminal:
+
+```
 sudo aiosmtpd -n -d -l 0.0.0.0:25
 ```
 
